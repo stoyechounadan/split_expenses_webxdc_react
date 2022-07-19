@@ -1,18 +1,32 @@
-import Footer from './components/Footer'
+import JoinScreen from './components/JoinScreen'
+import { createContext, FC, useState } from 'react'
+
+
+//types required for the component state
+// interface App {
+//   participants: string[];
+// }
+
+//create the context, the context type we defined it in the interface appState with all the props the app will need
+export const ParticipantsContext = createContext<string[]>([])
 
 export default function App() {
+
+  //useState needs the interface also to get types and initialization
+  const [participants, setParticipants] = useState<string[]>([]); //the general state of the app, needs a generic type<> and a default value []
+
+  useEffect(() => {
+    window.webxdc.setUpdateListener(function (update) {
+      if (update.payload.action == "join") {
+        setParticipants([...participants, update.payload.person]);//swap this array with the former one
+      }
+    });
+    console.log(participants);
+  }, []);
+
   return (
-    <main className="font-sans px-4 py-10 text-center text-gray-700 dark:text-gray-200">
-      <div>
-        <div className="i-carbon-identification text-4xl inline-block" />
-        <p>
-          Hello, { window.webxdc.selfName }
-        </p>
-        <p className="text-sm op50">
-          <em>Your address: { window.webxdc.selfAddr }</em>
-        </p>
-      </div>
-      <Footer />
-    </main>
+    <ParticipantsContext.Provider value={participants}>
+      <JoinScreen></JoinScreen>
+    </ParticipantsContext.Provider>
   )
 }
