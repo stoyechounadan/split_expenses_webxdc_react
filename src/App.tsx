@@ -18,11 +18,17 @@ export default function App() {
   useEffect(() => {
     window.webxdc.setUpdateListener(function (update) {
       if (update.payload.action == "join") {
-        setParticipants([...participants, update.payload.person]);//swap this array with the former one
+        setParticipants(
+          (state) => {
+            //swap this array with the former one
+            return [...state, update.payload.person]
+          }
+        );
       }
     });
-    console.log(participants);
   }, []);
+
+  console.log(participants);
 
   return (
     <ParticipantsContext.Provider value={participants}>
